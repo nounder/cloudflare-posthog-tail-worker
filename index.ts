@@ -6,7 +6,12 @@ export default {
    * See: https://developers.cloudflare.com/workers/runtime-apis/handlers/tail/#taillog
    */
   async tail(events: TailEvent["events"], env: Env, ctx) {
-    const { POSTHOG_API_KEY } = env;
+    const {
+      POSTHOG_API_KEY,
+      POSTHOG_API_URL = "https://i.posthog.com",
+      LOG_PREFIX = "event\t",
+      POSTHOG_PROCESS_PERSON_PROFILE = "false",
+    } = env;
 
     if (!POSTHOG_API_KEY) {
       console.warn("No POSTHOG_API_KEY set");
@@ -24,7 +29,7 @@ export default {
         }
 
         return log.message.map((line) => {
-          if (line.startsWith(env.LOG_PREFIX)) {
+          if (line.startsWith(LOG_PREFIX)) {
             const text = line.slice(env.LOG_PREFIX.length);
             const {
               event,
@@ -37,7 +42,7 @@ export default {
               properties.$ip = clientIp;
             }
 
-            if (env.POSTHOG_PROCESS_PERSON_PROFILE === "true") {
+            if (POSTHOG_PROCESS_PERSON_PROFILE === "true") {
               properties.$process_person_profile = true;
             }
 
@@ -56,7 +61,7 @@ export default {
             };
 
             ctx.waitUntil(
-              fetch(`${env.POSTHOG_URL}/capture/`, {
+              fetch(`${POSTHOG_API_URL}/capture/`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

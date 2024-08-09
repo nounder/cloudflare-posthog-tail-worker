@@ -1,13 +1,13 @@
-name = "cf-tail"
+name = "cloudflare-posthog-tail-worker"
 main = "index.ts"
 compatibility_date = "2024-07-29"
 
 [vars]
-POSTHOG_API_KEY="https://i.posthog.com"
+POSTHOG_API_URL="https://i.posthog.com"
+# Use `wrangler secret put POSTHOG_API_KEY` to set API key safely
 
 LOG_PREFIX="event\t"
 
 #See: https://posthog.com/docs/data/persons
 POSTHOG_PROCESS_PERSON_PROFILE=false
 
-# Use `wrangler set --env POSTHOG_API_KEY=secret` to set API key
